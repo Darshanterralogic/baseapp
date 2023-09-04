@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block body %}
+{% load static %}
+<!-- Include Bootstrap Datepicker -->
+  <!-- Custom styles for this page -->
+    <link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+
+        <div class="container-fluid">
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">Time Off List</h1>
+            </div>
+            <div class="card">
+               <div class="card-body">
+                   {% if messages %}
+                    <ul class="messagelist">
+                        {% for message in messages %}
+                            <li>{{ message.message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                    <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Time Off Type</th>
+                                            <th>Subject</th>
+                                            <th>description</th>
+                                            <th>created_at</th>
+                                            <th>updated_at</th>
+                                            <th>Dates</th>
+                                            <th>Actions</th>
+
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    {% for i in timeoff_header %}
+                                        <tr>
+                                            <td>{{forloop.counter}}</td>
+                                            <td>{{i.time_off_type_id__name}}</td>
+                                            <td>{{i.subject}}</td>
+                                            <td>{{i.description}}</td>
+                                            <td>{{i.created_at}}</td>
+                                            <td>{{i.updated_at}}</td>
+                                            <td>{{i.dates}}</td>
+                                            <td><a href="/timeoff/timeoff_delete/{{i.id}}"><i style="color:red" class="fa fa-trash"></i></a>&nbsp;
+                                            <a href="/timeoff/timeoff_edit/{{i.id}}"><i style="color:blue" class="fa fa-edit"></i></a></td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+               </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+  <!-- Page level plugins -->
+    <script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{% static 'js/demo/datatables-demo.js' %}"></script>
+<script>
+</script>
+{% endblock %}

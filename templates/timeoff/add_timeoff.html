@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block body %}
+<!-- Include Bootstrap Datepicker -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<!-- Begin Page Content -->
+
+
+        <div class="container-fluid">
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">Add Time Off</h1>
+            </div>
+            <div class="card">
+               <div class="card-body">
+                   {% if messages %}
+                    <ul class="messagelist">
+                        {% for message in messages %}
+                            <li>{{ message.message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                     <form method="POST" action="" onsubmit="return validateForm();">{% csrf_token %}
+                          <div class="row">
+                            <div class="col">
+                                <label for="timeoff_type">Time Off type</label>
+                                <select class="form-control form-select" name="timeoff_type" id="timeoff_type" required>
+                                    <option value="">Select Time Off type</option>
+                                    {% for i in timeoff_types %}
+                                        <option value="{{i.id}}">{{i.name}}</option>
+                                    {% endfor %}
+
+                                </select>
+                            </div>
+                              <div class="col-md-12 mt-4">
+                                <label for="Dates">Date</label>
+                               <input type="text" readonly class="form-control" id="Dates" name="Dates" placeholder="Select Dates" required />
+                            </div>
+                           <div class="col-md-12 mt-4">
+                                <label for="subject">Subject</label>
+                              <input type="text" autocomplete="off" class="form-control" placeholder="Subject" id="subject" name="subject" required>
+                            </div>
+                              <div class="col-md-12 mt-4">
+                                <label for="Description">Description</label>
+                                  <textarea autocomplete="off" class="form-control" placeholder="Description" id="Description" name="description"></textarea>
+                            </div>
+                              <div class="col-md-12 mt-4 text-center">
+                                  <input type="submit" class="btn btn-primary" value="submit">
+                            </div>
+
+                          </div>
+                    </form>
+               </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+
+<script>
+var applied_pto_count='{{pto_count}}'
+var applied_sick_count='{{sick_leave_count}}'
+function validateForm() {
+    // Validate required fields
+    if ($('#timeoff_type').val() === "" || $('#Dates').val() === "" || $('#subject').val() === "" ) {
+        alert("All fields are required. Please fill them out.");
+        return false;
+    }
+
+    var dates=$('#Dates').val().split(',')
+    //=======PTO==============
+    if ($('#timeoff_type').val() == '1'){
+        if (applied_pto_count){
+            if (applied_pto_count == '12' ){
+                alert('PTO limit exceed,Choose another Time Off')
+                return false;
+            }
+            var total=parseInt(applied_pto_count)+parseInt(dates.length)
+             if (total >12 ){
+                c=12-applied_pto_count
+                var text="You have only "+c+" limit for PTO for Choosing Dates"
+                alert(text)
+                return false;
+            }
+        }else{
+            if (dates.length >12 ){
+                alert('Maximum 12 dates alre allowed for PTO')
+                return false;
+            }
+        }
+
+    }
+    //=======Sick Leave==============
+    if ($('#timeoff_type').val() == '2'){
+        if (applied_sick_count){
+            if (applied_sick_count == '12' ){
+                alert('Sick Leave limit exceed,Choose another Time Off')
+                return false;
+            }
+            var total=parseInt(applied_sick_count)+parseInt(dates.length)
+             if (total >12 ){
+                c=12-applied_sick_count
+                var text="You have only "+c+" limit for Sick Leave for Choosing Dates"
+                alert(text)
+                return false;
+            }
+        }else{
+            if (dates.length >12 ){
+                alert('Maximum 12 dates alre allowed for Sick Leave')
+                return false;
+            }
+        }
+
+    }
+    return true;
+}
+
+
+
+$(document).ready(function() {
+    $('#Dates').datepicker({
+        startDate: new Date(),
+        multidate: true,
+        format: "dd/mm/yyyy",
+        daysOfWeekDisabled: [0, 6],
+        datesDisabled: {{formatted_dates|safe}},
+    })
+});
+</script>
+{% endblock %}
